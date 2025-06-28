@@ -15,6 +15,7 @@
 Vector2 IsoTransform(Vector2 coordinate) {
     float x = 0.5 * coordinate.x - 0.5 * coordinate.y;
     float y = 0.25 * coordinate.x + 0.25 * coordinate.y;
+    x -= TILESIZE / 2;
     x += SCREENWIDTH / 2;
     y += SCREENHEIGHT / 4;
     return (Vector2){ x, y };
