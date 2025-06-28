@@ -12,6 +12,11 @@
 #define C3 (Color){ 48, 102, 87 }
 #define C4 (Color){ 36, 76, 64 }
 
+int tile_height[GRIDSIZE][GRIDSIZE] = {
+    1,1,1,1
+};
+
+
 Vector2 IsoTransform(Vector2 coordinate) {
     float x = 0.5 * coordinate.x - 0.5 * coordinate.y;
     float y = 0.25 * coordinate.x + 0.25 * coordinate.y;
@@ -27,6 +32,8 @@ void DrawTiles() {
         for (int j = 0; j < GRIDSIZE; j++) {
             Vector2 origin = { TILESIZE * j, TILESIZE * i };
             origin = IsoTransform(origin);
+            // Raise blocks according to their height
+            origin.y -= tile_height[j][i] * TILESIZE * 0.5;
             DrawTextureV(basic_tile, origin, WHITE);
         }
 }
