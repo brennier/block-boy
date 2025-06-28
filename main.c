@@ -1,5 +1,6 @@
 #include "include/raylib.h"
 #include "include/raymath.h"
+#include <math.h>
 
 #define SCREENHEIGHT 1080
 #define SCREENWIDTH  1920
@@ -12,10 +13,7 @@
 #define C3 (Color){ 48, 102, 87 }
 #define C4 (Color){ 36, 76, 64 }
 
-int tile_height[GRIDSIZE][GRIDSIZE] = {
-    1,1,1,1
-};
-
+float tile_height[GRIDSIZE][GRIDSIZE] = { 0 };
 
 Vector2 IsoTransform(Vector2 coordinate) {
     float x = 0.5 * coordinate.x - 0.5 * coordinate.y;
@@ -42,20 +40,14 @@ int main() {
     InitWindow(SCREENWIDTH, SCREENHEIGHT, "Basic ball program");
     SetTargetFPS(60);
 
+    while (WindowShouldClose() != true) {
+        for (int i = 0; i < GRIDSIZE; i++)
+            for (int j = 0; j < GRIDSIZE; j++)
+                tile_height[j][i] = 0.25 * sin(3 * GetTime() + (j + i));
 
-    int x = 10;
-
-    while (WindowShouldClose() != true)
-    {
         BeginDrawing();
-
         ClearBackground(C1);
-
-        if (IsKeyDown(KEY_RIGHT))
-            x++;
-
         DrawTiles();
-
         EndDrawing();
     }
 
