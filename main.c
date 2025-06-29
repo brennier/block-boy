@@ -43,14 +43,6 @@ int main() {
     SetTargetFPS(60);
 
     while (WindowShouldClose() != true) {
-        for (int i = 0; i < GRIDSIZE; i++)
-            for (int j = 0; j < GRIDSIZE; j++) {
-                tile_height[j][i] =  sin(M_PI * GetTime());
-                tile_height[j][i] += sin(M_PI * GetTime() + i);
-                tile_height[j][i] += sin(M_PI * GetTime() + j);
-                tile_height[j][i] *= 0.33;
-            }
-
         if (IsKeyDown(KEY_RIGHT))
             player_pos.x += TILESIZE;
         if (IsKeyDown(KEY_LEFT))
