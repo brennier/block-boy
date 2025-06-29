@@ -39,8 +39,13 @@ Vector2 IsoTransform(Vector2 coordinate) {
 
 void DrawPlayer(Player player, Texture2D player_sprite) {
     Vector2 pos = (Vector2){ player.x, player.y };
+    pos = Vector2Scale(pos, TILESIZE);
     pos = IsoTransform(pos);
-    pos.y += TILESIZE / 4;
+    // Raise the player up so his feet are on grid
+    pos.y -= TILESIZE / 2;
+    pos.y -= TILESIZE / 8;
+    // Raise his up to the tile's height
+    pos.y -= tile_height[player.x][player.y] * TILESIZE * 0.5;
     DrawTextureV(player_sprite, pos, WHITE);
 }
 
@@ -65,17 +70,19 @@ int main() {
         .x = GRIDSIZE / 2,
         .y = GRIDSIZE / 2
     };
+    tile_height[5][5] = 1;
+    tile_height[5][8] = 2;
     SetTargetFPS(60);
 
     while (WindowShouldClose() != true) {
         if (IsKeyDown(KEY_RIGHT))
-            player.x += TILESIZE;
+            player.x += 1;
         if (IsKeyDown(KEY_LEFT))
-            player.x -= TILESIZE;
+            player.x -= 1;
         if (IsKeyDown(KEY_DOWN))
-            player.y += TILESIZE;
+            player.y += 1;
         if (IsKeyDown(KEY_UP))
-            player.y -= TILESIZE;
+            player.y -= 1;
 
         BeginDrawing();
         ClearBackground(C1);
