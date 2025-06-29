@@ -5,6 +5,7 @@
 #define SCREENWIDTH  1920
 #define GRIDSIZE 20
 #define TILESIZE 64
+#define INPUT_DELAY .2 // delay in seconds
 
 // Green color palatte from lighest to darkest
 #define C1 (Color){ 138, 189, 76 }
@@ -61,6 +62,8 @@ void DrawTiles(Texture2D basic_tile) {
 }
 
 int main() {
+    // Use VSync to refresh along with the monitor
+    SetConfigFlags(FLAG_VSYNC_HINT);
     InitWindow(SCREENWIDTH, SCREENHEIGHT, "Basic ball program");
     Texture2D border = LoadTexture("assets/gameboy_border.png");
     Texture2D basic_tile = LoadTexture("assets/basic_tile.png");
@@ -72,22 +75,46 @@ int main() {
     };
     tile_height[5][5] = 1;
     tile_height[5][8] = 2;
-    SetTargetFPS(60);
+    float input_delay = 0;
+    float delta_time = 0.0;
 
     while (WindowShouldClose() != true) {
-        if (IsKeyDown(KEY_RIGHT))
-            player.x += 1;
-        if (IsKeyDown(KEY_LEFT))
-            player.x -= 1;
-        if (IsKeyDown(KEY_DOWN))
-            player.y += 1;
-        if (IsKeyDown(KEY_UP))
-            player.y -= 1;
+        float delta_time = GetFrameTime();
+        if (player.state == STANDING) {
+            if (IsKeyDown(KEY_RIGHT)) {
+                player.x += 1;
+                player.state = WALKING_RIGHT;
+                input_delay = INPUT_DELAY;
+            }
+            if (IsKeyDown(KEY_LEFT)) {
+                player.x -= 1;
+                player.state = WALKING_LEFT;
+                input_delay = INPUT_DELAY;
+            }
+            if (IsKeyDown(KEY_DOWN)) {
+                player.y += 1;
+                player.state = WALKING_DOWN;
+                input_delay = INPUT_DELAY;
+            }
+            if (IsKeyDown(KEY_UP)) {
+                player.y -= 1;
+                player.state = WALKING_UP;
+                input_delay = INPUT_DELAY;
+            }
+        }
+
+        if (input_delay < 0)
+            input_delay = 0;
+        else if (input_delay > 0)
+            input_delay -= delta_time;
+        else
+            player.state = STANDING;
 
         BeginDrawing();
         ClearBackground(C1);
         DrawTiles(basic_tile);
         DrawPlayer(player, player_sprite);
+        DrawFPS(10, 10);
         EndDrawing();
     }
 
