@@ -13,6 +13,9 @@
 #define C3 (Color){ 48, 102, 87 }
 #define C4 (Color){ 36, 76, 64 }
 
+Texture2D player_sprite;
+Texture2D basic_tile;
+
 typedef enum PlayerState {
     WALKING_RIGHT,
     WALKING_LEFT,
@@ -38,7 +41,7 @@ Vector2 IsoTransform(Vector2 coordinate) {
     return (Vector2){ x, y };
 }
 
-void DrawPlayer(Player player, Texture2D player_sprite) {
+void DrawPlayer(Player player) {
     Vector2 pos = (Vector2){ player.x, player.y };
     pos = Vector2Scale(pos, TILESIZE);
     pos = IsoTransform(pos);
@@ -50,16 +53,22 @@ void DrawPlayer(Player player, Texture2D player_sprite) {
     DrawTextureV(player_sprite, pos, WHITE);
 }
 
-void DrawTiles(Texture2D basic_tile) {
+void DrawTile(int row, int col) {
+    Vector2 origin = { TILESIZE * row, TILESIZE * col };
+    origin = IsoTransform(origin);
+    // Draw a column of blocks according to the height
+    for (int height = 0; height <= tile_height[row][col]; height++) {
+        float y = origin.y - height * TILESIZE * 0.5;
+        DrawTexture(basic_tile, origin.x, y, WHITE);
+    }
+}
+
+void DrawGame(Player player) {
     for (int i = 0; i < GRIDSIZE; i++)
         for (int j = 0; j < GRIDSIZE; j++) {
-            Vector2 origin = { TILESIZE * j, TILESIZE * i };
-            origin = IsoTransform(origin);
-            // Draw a column of blocks according to the height
-            for (int height = 0; height <= tile_height[j][i]; height++) {
-                float y = origin.y - height * TILESIZE * 0.5;
-                DrawTexture(basic_tile, origin.x, y, WHITE);
-            }
+            DrawTile(j, i);
+            if (j == player.x && i == player.y)
+                DrawPlayer(player);
         }
 }
 
@@ -68,8 +77,8 @@ int main() {
     SetConfigFlags(FLAG_VSYNC_HINT);
     InitWindow(SCREENWIDTH, SCREENHEIGHT, "Basic ball program");
     Texture2D border = LoadTexture("assets/gameboy_border.png");
-    Texture2D basic_tile = LoadTexture("assets/basic_tile.png");
-    Texture2D player_sprite = LoadTexture("assets/player.png");
+    basic_tile = LoadTexture("assets/basic_tile.png");
+    player_sprite = LoadTexture("assets/player.png");
     Player player = {
         .state = STANDING,
         .x = GRIDSIZE / 2,
@@ -114,8 +123,7 @@ int main() {
 
         BeginDrawing();
         ClearBackground(C1);
-        DrawTiles(basic_tile);
-        DrawPlayer(player, player_sprite);
+        DrawGame(player);
         DrawFPS(10, 10);
         EndDrawing();
     }
