@@ -55,9 +55,11 @@ void DrawTiles(Texture2D basic_tile) {
         for (int j = 0; j < GRIDSIZE; j++) {
             Vector2 origin = { TILESIZE * j, TILESIZE * i };
             origin = IsoTransform(origin);
-            // Raise blocks according to their height
-            origin.y -= tile_height[j][i] * TILESIZE * 0.5;
-            DrawTextureV(basic_tile, origin, WHITE);
+            // Draw a column of blocks according to the height
+            for (int height = 0; height <= tile_height[j][i]; height++) {
+                float y = origin.y - height * TILESIZE * 0.5;
+                DrawTexture(basic_tile, origin.x, y, WHITE);
+            }
         }
 }
 
