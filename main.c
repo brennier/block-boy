@@ -1,8 +1,8 @@
 #include "include/raylib.h"
 #include "include/raymath.h"
 #include <math.h>
-#define SCREENHEIGHT 930
-#define SCREENWIDTH  1120
+#define SCREENHEIGHT 1080
+#define SCREENWIDTH  1920
 #define GRIDSIZE 20
 #define TILESIZE 64
 
@@ -13,7 +13,6 @@
 #define C4 (Color){ 36, 76, 64 }
 
 float tile_height[GRIDSIZE][GRIDSIZE] = { 0 };
-Vector2 tile_offset = { 0 };
 
 Vector2 IsoTransform(Vector2 coordinate) {
     float x = 0.5 * coordinate.x - 0.5 * coordinate.y;
@@ -31,7 +30,7 @@ void DrawTiles(Texture2D basic_tile) {
             origin = IsoTransform(origin);
             // Raise blocks according to their height
             origin.y -= tile_height[j][i] * TILESIZE * 0.5;
-            DrawTextureV(basic_tile, Vector2Add(origin, tile_offset), WHITE);
+            DrawTextureV(basic_tile, origin, WHITE);
         }
 }
 
@@ -39,6 +38,8 @@ int main() {
     InitWindow(SCREENWIDTH, SCREENHEIGHT, "Basic ball program");
     Texture2D border = LoadTexture("assets/gameboy_border.png");
     Texture2D basic_tile = LoadTexture("assets/basic_tile.png");
+    Texture2D player = LoadTexture("assets/player.png");
+    Vector2 player_pos = { GRIDSIZE / 2, GRIDSIZE / 2 };
     SetTargetFPS(60);
 
     while (WindowShouldClose() != true) {
@@ -47,24 +48,23 @@ int main() {
                 tile_height[j][i] =  sin(M_PI * GetTime());
                 tile_height[j][i] += sin(M_PI * GetTime() + i);
                 tile_height[j][i] += sin(M_PI * GetTime() + j);
-                tile_height[j][i] *= 0.25;
+                tile_height[j][i] *= 0.33;
             }
 
         if (IsKeyDown(KEY_RIGHT))
-            tile_offset.x -= 3;
+            player_pos.x += TILESIZE;
         if (IsKeyDown(KEY_LEFT))
-            tile_offset.x += 3;
+            player_pos.x -= TILESIZE;
         if (IsKeyDown(KEY_DOWN))
-            tile_offset.y -= 3;
+            player_pos.y += TILESIZE;
         if (IsKeyDown(KEY_UP))
-            tile_offset.y += 3;
-
-
+            player_pos.y -= TILESIZE;
 
         BeginDrawing();
         ClearBackground(C1);
         DrawTiles(basic_tile);
-        DrawTexture(border, 0, 0, WHITE);
+        DrawTextureV(player, IsoTransform(player_pos), WHITE);
+        /* DrawTexture(border, 0, 0, WHITE); */
         EndDrawing();
     }
 
