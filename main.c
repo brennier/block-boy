@@ -12,6 +12,20 @@
 #define C3 (Color){ 48, 102, 87 }
 #define C4 (Color){ 36, 76, 64 }
 
+typedef enum PlayerState {
+    WALKING_RIGHT,
+    WALKING_LEFT,
+    WALKING_UP,
+    WALKING_DOWN,
+    STANDING
+} PlayerState;
+
+typedef struct Player {
+    PlayerState state;
+    int x;
+    int y;
+} Player;
+
 float tile_height[GRIDSIZE][GRIDSIZE] = { 0 };
 
 Vector2 IsoTransform(Vector2 coordinate) {
@@ -21,6 +35,13 @@ Vector2 IsoTransform(Vector2 coordinate) {
     x += SCREENWIDTH / 2;
     y += SCREENHEIGHT / 4;
     return (Vector2){ x, y };
+}
+
+void DrawPlayer(Player player, Texture2D player_sprite) {
+    Vector2 pos = (Vector2){ player.x, player.y };
+    pos = IsoTransform(pos);
+    pos.y += TILESIZE / 4;
+    DrawTextureV(player_sprite, pos, WHITE);
 }
 
 void DrawTiles(Texture2D basic_tile) {
@@ -38,25 +59,28 @@ int main() {
     InitWindow(SCREENWIDTH, SCREENHEIGHT, "Basic ball program");
     Texture2D border = LoadTexture("assets/gameboy_border.png");
     Texture2D basic_tile = LoadTexture("assets/basic_tile.png");
-    Texture2D player = LoadTexture("assets/player.png");
-    Vector2 player_pos = { GRIDSIZE / 2, GRIDSIZE / 2 };
+    Texture2D player_sprite = LoadTexture("assets/player.png");
+    Player player = {
+        .state = STANDING,
+        .x = GRIDSIZE / 2,
+        .y = GRIDSIZE / 2
+    };
     SetTargetFPS(60);
 
     while (WindowShouldClose() != true) {
         if (IsKeyDown(KEY_RIGHT))
-            player_pos.x += TILESIZE;
+            player.x += TILESIZE;
         if (IsKeyDown(KEY_LEFT))
-            player_pos.x -= TILESIZE;
+            player.x -= TILESIZE;
         if (IsKeyDown(KEY_DOWN))
-            player_pos.y += TILESIZE;
+            player.y += TILESIZE;
         if (IsKeyDown(KEY_UP))
-            player_pos.y -= TILESIZE;
+            player.y -= TILESIZE;
 
         BeginDrawing();
         ClearBackground(C1);
         DrawTiles(basic_tile);
-        DrawTextureV(player, IsoTransform(player_pos), WHITE);
-        /* DrawTexture(border, 0, 0, WHITE); */
+        DrawPlayer(player, player_sprite);
         EndDrawing();
     }
 
