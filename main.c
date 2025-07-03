@@ -8,10 +8,10 @@
 #define INPUT_DELAY .2 // delay in seconds
 
 // Green color palatte from lighest to darkest
-#define C1 (Color){ 138, 189, 76 }
-#define C2 (Color){ 64, 133, 109 }
-#define C3 (Color){ 48, 102, 87 }
-#define C4 (Color){ 36, 76, 64 }
+#define C1 (Color){ 138, 189, 76, 255 }
+#define C2 (Color){ 64, 133, 109, 255 }
+#define C3 (Color){ 48, 102, 87, 255 }
+#define C4 (Color){ 36, 76, 64, 255 }
 
 Texture2D player_sprite;
 Texture2D basic_tile;
