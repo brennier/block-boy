@@ -1,15 +1,26 @@
 CC = gcc
-CFLAGS = -O3 -std=c99 -pedantic -Wall -Wextra
-INCLUDES = include
+CFLAGS = -O3 -std=c99 -Wall -pedantic
 LIBS = lib
-LFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
-OUTPUT = game
+INCLUDES = include
 
-${OUTPUT}: main.o
+# Use different linker libraries and output names depending on the OS
+ifeq ($(OS),Windows_NT)
+	LFLAGS = -lraylib -lopengl32 -lgdi32 -lwinmm -mwindows
+	OUTPUT = game.exe
+else
+	LFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+	OUTPUT = game
+endif
+
+${OUTPUT}: main.o lib/libraylib.a
 	${CC} $^ -o ${OUTPUT} -L ${LIBS} ${LFLAGS}
 
 main.o: main.c
-	${CC} ${CFLAGS} $^ -c -I ${INCLUDES}
+	${CC} ${CFLAGS} -c -I ${INCLUDES} $^
+
+lib/libraylib.a:
+	make -C lib/raylib/src
+	cp lib/raylib/src/libraylib.a lib/libraylib.a
 
 clean:
 	@echo "Cleaning up all files.."
