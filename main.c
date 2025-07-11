@@ -16,19 +16,15 @@
 Texture2D player_sprite;
 Texture2D basic_tile;
 
-typedef enum PlayerState {
-    WALKING_RIGHT,
-    WALKING_LEFT,
-    WALKING_UP,
-    WALKING_DOWN,
-    STANDING
-} PlayerState;
-
-typedef struct Player {
-    PlayerState state;
+struct Player {
     int x;
     int y;
-} Player;
+    enum {
+        UP,
+        LEFT,
+        RIGHT
+    } direction;
+};
 
 float tile_height[GRIDSIZE][GRIDSIZE] = { 0 };
 
@@ -41,15 +37,13 @@ Vector2 IsoTransform(Vector2 coordinate) {
     return (Vector2){ x, y };
 }
 
-void DrawPlayer(Player player) {
+void DrawPlayer(struct Player player) {
     Vector2 pos = (Vector2){ player.x, player.y };
     pos = Vector2Scale(pos, TILESIZE);
     pos = IsoTransform(pos);
     // Raise the player up so his feet are on grid
     pos.y -= TILESIZE;
-    //pos.y -= TILESIZE / 2;
-    //pos.y -= TILESIZE / 8;
-    // Raise his up to the tile's height
+    // Raise this up to the current tile's height
     pos.y -= tile_height[player.x][player.y] * TILESIZE * 0.5;
     DrawTextureV(player_sprite, pos, WHITE);
 }
@@ -64,7 +58,7 @@ void DrawTile(int row, int col) {
     }
 }
 
-void DrawGame(Player player) {
+void DrawGame(struct Player player) {
     for (int i = 0; i < GRIDSIZE; i++)
         for (int j = 0; j < GRIDSIZE; j++) {
             DrawTile(j, i);
@@ -80,8 +74,8 @@ int main() {
     Texture2D border = LoadTexture("assets/gameboy_border.png");
     basic_tile = LoadTexture("assets/basic_tile.png");
     player_sprite = LoadTexture("assets/player.png");
-    Player player = {
-        .state = STANDING,
+    struct Player player = {
+        .direction = UP,
         .x = GRIDSIZE / 2,
         .y = GRIDSIZE / 2
     };
@@ -92,35 +86,31 @@ int main() {
 
     while (WindowShouldClose() != true) {
         float delta_time = GetFrameTime();
-        if (player.state == STANDING) {
+        if (input_delay <= 0) {
             if (IsKeyDown(KEY_RIGHT)) {
                 player.x += 1;
-                player.state = WALKING_RIGHT;
+                player.direction = LEFT;
                 input_delay = INPUT_DELAY;
             }
             if (IsKeyDown(KEY_LEFT)) {
                 player.x -= 1;
-                player.state = WALKING_LEFT;
+                player.direction = LEFT;
                 input_delay = INPUT_DELAY;
             }
             if (IsKeyDown(KEY_DOWN)) {
                 player.y += 1;
-                player.state = WALKING_DOWN;
+                player.direction = RIGHT;
                 input_delay = INPUT_DELAY;
             }
             if (IsKeyDown(KEY_UP)) {
                 player.y -= 1;
-                player.state = WALKING_UP;
+                player.direction = RIGHT;
                 input_delay = INPUT_DELAY;
             }
         }
-
-        if (input_delay < 0)
-            input_delay = 0;
-        else if (input_delay > 0)
+        else {
             input_delay -= delta_time;
-        else
-            player.state = STANDING;
+        }
 
         BeginDrawing();
         ClearBackground(C1);
