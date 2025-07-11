@@ -46,8 +46,9 @@ void DrawPlayer(Player player) {
     pos = Vector2Scale(pos, TILESIZE);
     pos = IsoTransform(pos);
     // Raise the player up so his feet are on grid
-    pos.y -= TILESIZE / 2;
-    pos.y -= TILESIZE / 8;
+    pos.y -= TILESIZE;
+    //pos.y -= TILESIZE / 2;
+    //pos.y -= TILESIZE / 8;
     // Raise his up to the tile's height
     pos.y -= tile_height[player.x][player.y] * TILESIZE * 0.5;
     DrawTextureV(player_sprite, pos, WHITE);
